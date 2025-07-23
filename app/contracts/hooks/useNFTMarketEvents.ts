@@ -43,21 +43,55 @@ export const useNFTMarketEvents = () => {
   const [soldEvents, setSoldEvents] = useState<NFTSoldEvent[]>([])
   const [cancelledEvents, setCancelledEvents] = useState<NFTListingCancelledEvent[]>([])
   const [isListening, setIsListening] = useState(false)
+  const [unsubscribeFunctions, setUnsubscribeFunctions] = useState<{
+    listed?: () => void
+    sold?: () => void
+    cancelled?: () => void
+  }>({})
 
-  useEffect(() => {
-    if (!publicClient) return
+  // 手动停止监听函数
+  const stopListening = () => {
+    if (unsubscribeFunctions.listed) {
+      unsubscribeFunctions.listed()
+      console.log('🔇 停止监听 NFT 上架事件')
+    }
+    if (unsubscribeFunctions.sold) {
+      unsubscribeFunctions.sold()
+      console.log('🔇 停止监听 NFT 售出事件')
+    }
+    if (unsubscribeFunctions.cancelled) {
+      unsubscribeFunctions.cancelled()
+      console.log('🔇 停止监听 NFT 取消上架事件')
+    }
+    setUnsubscribeFunctions({})
+    setIsListening(false)
+    console.log('⏹️ 已停止所有 NFT 事件监听')
+  }
 
-    let unsubscribeListed: (() => void) | undefined
-    let unsubscribeSold: (() => void) | undefined
-    let unsubscribeCancelled: (() => void) | undefined
+  // 手动开始监听函数
+  const startListening = async () => {
+    if (!publicClient) {
+      console.log('❌ 无法获取公共客户端，请检查网络连接')
+      return
+    }
 
-    const startListening = async () => {
-      try {
-        setIsListening(true)
-        console.log('🎯 开始监听 NFT 市场事件...')
+    if (isListening) {
+      console.log('⚠️ 监听已在进行中')
+      return
+    }
 
-        // 监听 NFT 上架事件
-        unsubscribeListed = publicClient.watchContractEvent({
+    try {
+      setIsListening(true)
+      console.log('🎯 开始监听 NFT 市场事件...')
+
+      let unsubscribeListed: (() => void) | undefined
+      let unsubscribeSold: (() => void) | undefined
+      let unsubscribeCancelled: (() => void) | undefined
+
+
+
+      // 监听 NFT 上架事件
+      unsubscribeListed = publicClient.watchContractEvent({
           address: CONTRACT_ADDRESSES.NFT_MARKET,
           abi: NFTMarketABI,
           eventName: 'NFTListed',
@@ -90,8 +124,8 @@ export const useNFTMarketEvents = () => {
           }
         })
 
-        // 监听 NFT 售出事件
-        unsubscribeSold = publicClient.watchContractEvent({
+      // 监听 NFT 售出事件
+      unsubscribeSold = publicClient.watchContractEvent({
           address: CONTRACT_ADDRESSES.NFT_MARKET,
           abi: NFTMarketABI,
           eventName: 'NFTSold',
@@ -126,8 +160,8 @@ export const useNFTMarketEvents = () => {
           }
         })
 
-        // 监听 NFT 取消上架事件
-        unsubscribeCancelled = publicClient.watchContractEvent({
+      // 监听 NFT 取消上架事件
+      unsubscribeCancelled = publicClient.watchContractEvent({
           address: CONTRACT_ADDRESSES.NFT_MARKET,
           abi: NFTMarketABI,
           eventName: 'NFTListingCancelled',
@@ -152,43 +186,42 @@ export const useNFTMarketEvents = () => {
           }
         })
 
-        console.log('✅ NFT 市场事件监听已启动')
-      } catch (error) {
-        console.error('❌ 启动 NFT 事件监听失败:', error)
-        setIsListening(false)
-      }
-    }
+      // 保存取消订阅函数
+      setUnsubscribeFunctions({
+        listed: unsubscribeListed,
+        sold: unsubscribeSold,
+        cancelled: unsubscribeCancelled
+      })
 
-    startListening()
-
-    // 清理函数
-    return () => {
-      if (unsubscribeListed) {
-        unsubscribeListed()
-        console.log('🔇 停止监听 NFT 上架事件')
-      }
-      if (unsubscribeSold) {
-        unsubscribeSold()
-        console.log('🔇 停止监听 NFT 售出事件')
-      }
-      if (unsubscribeCancelled) {
-        unsubscribeCancelled()
-        console.log('🔇 停止监听 NFT 取消上架事件')
-      }
+      console.log('✅ NFT 市场事件监听已启动')
+    } catch (error) {
+      console.error('❌ 启动 NFT 事件监听失败:', error)
       setIsListening(false)
     }
-  }, [publicClient])
+  }
+
+  // 组件卸载时清理
+  useEffect(() => {
+    return () => {
+      stopListening()
+    }
+  }, [])
 
   return {
     listedEvents,
     soldEvents,
     cancelledEvents,
     isListening,
+    // 手动开始监听
+    startListening,
+    // 手动停止监听
+    stopListening,
     // 清空事件历史
     clearEvents: () => {
       setListedEvents([])
       setSoldEvents([])
       setCancelledEvents([])
+      console.log('🗑️ 已清空所有事件历史记录')
     }
   }
 }

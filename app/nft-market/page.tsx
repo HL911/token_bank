@@ -2,17 +2,18 @@
 
 import { useNFTMarketEvents } from '../contracts/hooks/useNFTMarketEvents'
 import { formatEther } from 'viem'
-import { useAccount } from 'wagmi'
 import { useEffect, useState } from 'react'
 
 export default function NFTMarketPage() {
-  const { address, isConnected } = useAccount()
   const [isClient, setIsClient] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
   const { 
     listedEvents, 
     soldEvents, 
     cancelledEvents, 
-    isListening, 
+    isListening,
+    startListening,
+    stopListening,
     clearEvents 
   } = useNFTMarketEvents()
 
@@ -34,18 +35,7 @@ export default function NFTMarketPage() {
     )
   }
 
-  if (!isConnected) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center py-20">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">NFT 市场事件监听</h1>
-            <p className="text-gray-600 text-lg">请先连接钱包以开始监听 NFT 市场事件</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
@@ -53,7 +43,7 @@ export default function NFTMarketPage() {
         {/* 页面标题 */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">NFT 市场事件监听</h1>
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-4 flex-wrap">
             <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
               isListening ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
             }`}>
@@ -64,12 +54,43 @@ export default function NFTMarketPage() {
                 {isListening ? '正在监听中...' : '监听已停止'}
               </span>
             </div>
-            <button
-              onClick={clearEvents}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-            >
-              清空历史
-            </button>
+            
+            {/* 控制按钮 */}
+            <div className="flex gap-2">
+              {!isListening ? (
+                <button
+                  onClick={startListening}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                >
+                  <span>▶️</span>
+                  开始监听
+                </button>
+              ) : (
+                <button
+                  onClick={stopListening}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+                >
+                  <span>⏹️</span>
+                  停止监听
+                </button>
+              )}
+              
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors flex items-center gap-2"
+              >
+                <span>📊</span>
+                {showHistory ? '隐藏历史' : '查看历史'}
+              </button>
+              
+              <button
+                onClick={clearEvents}
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+              >
+                <span>🗑️</span>
+                清空历史
+              </button>
+            </div>
           </div>
         </div>
 
@@ -112,8 +133,44 @@ export default function NFTMarketPage() {
           </div>
         </div>
 
-        {/* 事件列表 */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* 历史记录切换提示 */}
+        {!showHistory && (
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-gray-800 mb-2">📊 事件历史记录</h2>
+              <p className="text-gray-600 mb-4">点击上方"查看历史"按钮可以查看详细的事件监听历史记录</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="font-medium text-blue-800">📝 上架事件历史</div>
+                  <div className="text-blue-600">查看所有NFT上架记录</div>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <div className="font-medium text-green-800">💰 售出事件历史</div>
+                  <div className="text-green-600">查看所有NFT交易记录</div>
+                </div>
+                <div className="bg-red-50 p-3 rounded-lg">
+                  <div className="font-medium text-red-800">❌ 取消事件历史</div>
+                  <div className="text-red-600">查看所有取消上架记录</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 事件列表 - 仅在显示历史时展示 */}
+        {showHistory && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">📊 事件历史记录</h2>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+              >
+                <span>👁️</span>
+                隐藏历史
+              </button>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* NFT 上架事件 */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -255,7 +312,9 @@ export default function NFTMarketPage() {
               )}
             </div>
           </div>
-        </div>
+            </div>
+          </div>
+        )}
 
         {/* 使用说明 */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
