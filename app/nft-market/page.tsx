@@ -3,9 +3,11 @@
 import { useNFTMarketEvents } from '../contracts/hooks/useNFTMarketEvents'
 import { formatEther } from 'viem'
 import { useAccount } from 'wagmi'
+import { useEffect, useState } from 'react'
 
 export default function NFTMarketPage() {
   const { address, isConnected } = useAccount()
+  const [isClient, setIsClient] = useState(false)
   const { 
     listedEvents, 
     soldEvents, 
@@ -14,12 +16,30 @@ export default function NFTMarketPage() {
     clearEvents 
   } = useNFTMarketEvents()
 
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // 防止水合错误，在客户端渲染完成前显示加载状态
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center py-20">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">NFT 市场事件监听</h1>
+            <p className="text-gray-600 text-lg">正在加载...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!isConnected) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center py-20">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">NFT 市场监听</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">NFT 市场事件监听</h1>
             <p className="text-gray-600 text-lg">请先连接钱包以开始监听 NFT 市场事件</p>
           </div>
         </div>
