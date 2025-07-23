@@ -6,6 +6,7 @@ import { config } from './lib/wagmi'
 import "./globals.css"
 import { useState } from 'react'
 import { Geist, Geist_Mono } from "next/font/google";
+import Navbar from './components/navigation/Navbar'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +47,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            {children}
+            <Navbar />
+            <main>
+              {children}
+            </main>
           </QueryClientProvider>
         </WagmiProvider>
       </body>
