@@ -9,9 +9,13 @@ import WithdrawForm from './components/withdraw/WithdrawForm'
 import TransferForm from './components/transfer/TransferForm'
 import QueryForm from './components/query/QueryForm'
 
+// import ParticleBackground from './components/effects/ParticleBackground'
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pt-20 pb-8">
+    <>
+      {/* <ParticleBackground /> */}
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pt-20 pb-8">
       {/* Hero Section */}
       <div className="container mx-auto px-4 mb-16">
         <div className="text-center">
@@ -152,5 +156,6 @@ export default function Home() {
         </AnimatedCard>
       </div>
     </div>
+    </>
   )
 }

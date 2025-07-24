@@ -2,40 +2,60 @@
 
 // 钱包连接组件 - 处理钱包的连接和断开
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+// 格式化地址显示
+const formatAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
 
 export default function WalletConnect() {
+  const [isClient, setIsClient] = useState(false)
   const { address, isConnected } = useAccount()
-  const { connect, connectors, isPending } = useConnect()
+  const { connectors, connect, isPending } = useConnect()
   const { disconnect } = useDisconnect()
   const [isConnecting, setIsConnecting] = useState(false)
 
-  // 处理钱包连接
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   const handleConnect = async (connector: any) => {
     try {
       setIsConnecting(true)
       await connect({ connector })
     } catch (error) {
-      console.error('钱包连接失败:', error)
+      console.error('连接钱包失败:', error)
     } finally {
       setIsConnecting(false)
     }
   }
 
-  // 处理钱包断开
-  const handleDisconnect = () => {
-    disconnect()
+  const handleDisconnect = async () => {
+    try {
+      console.log('开始断开钱包连接...')
+      await disconnect()
+      console.log('钱包连接已断开')
+    } catch (error) {
+      console.error('断开钱包失败:', error)
+    }
   }
 
-  // 格式化地址显示
-  const formatAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  // 服务器端渲染时显示加载状态
+  if (!isClient) {
+    return (
+      <div className="bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-xl border border-gray-500/30 rounded-xl p-6">
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">钱包连接</h2>
+        <div className="space-y-4">
+          <p className="text-gray-300 mb-6 text-center">加载中...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
-      <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent">🔗 钱包连接</h2>
-      
+    <div className="bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-xl border border-gray-500/30 rounded-xl p-6">
+      <h2 className="text-2xl font-bold text-white mb-6 text-center">钱包连接</h2>
       {!isConnected ? (
         <div className="space-y-4">
           <p className="text-gray-300 mb-6">请选择钱包进行连接：</p>
@@ -58,9 +78,15 @@ export default function WalletConnect() {
               <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
               钱包已连接
             </p>
-            <p className="text-green-200/80 text-sm mt-2 font-mono">
-              地址: {formatAddress(address!)}
-            </p>
+            {address ? (
+              <p className="text-green-200/80 text-sm mt-2 font-mono">
+                地址: {formatAddress(address)}
+              </p>
+            ) : (
+              <p className="text-green-200/80 text-sm mt-2 font-mono">
+                地址加载中...
+              </p>
+            )}
           </div>
           <button
             onClick={handleDisconnect}
