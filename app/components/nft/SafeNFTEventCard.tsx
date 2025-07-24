@@ -60,7 +60,28 @@ export function SafeNFTEventCard({ event, className, index = 0 }: SafeNFTEventCa
   }
 
   const formatPrice = (price: string) => {
-    return `${parseFloat(price).toFixed(4)} ETH`
+    const numPrice = parseFloat(price)
+    
+    // 根据价格大小选择合适的精度
+    if (numPrice >= 1) {
+      return `${numPrice.toFixed(4)} ETH`
+    } else if (numPrice >= 0.001) {
+      return `${numPrice.toFixed(6)} ETH`
+    } else {
+      return `${numPrice.toExponential(3)} ETH`
+    }
+  }
+
+  const formatTokenAmount = (price: string) => {
+    const numPrice = parseFloat(price)
+    
+    // 显示完整的代币数量信息
+    return {
+      amount: numPrice,
+      formatted: formatPrice(price),
+      wei: price, // 原始wei值
+      symbol: 'ETH'
+    }
   }
 
   return (
@@ -131,7 +152,7 @@ export function SafeNFTEventCard({ event, className, index = 0 }: SafeNFTEventCa
               <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded-lg">
                 <span className="font-medium text-gray-300">价格:</span>
                 <span className={cn("font-bold", config.accentColor)}>
-                  {formatPrice(event.price)}
+                  {event.price}
                 </span>
               </div>
             )}

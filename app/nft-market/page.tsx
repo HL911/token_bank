@@ -43,7 +43,7 @@ export default function NFTMarketPage() {
         id: `listed-${index}-${event.transactionHash}`,
         type: 'listed',
         tokenId: event.tokenId.toString(),
-        price: formatEther(event.price),
+        price: event.price.toString(),
         seller: event.seller,
         timestamp: new Date(Number(event.timestamp) * 1000),
         transactionHash: event.transactionHash
@@ -56,7 +56,7 @@ export default function NFTMarketPage() {
         id: `sold-${index}-${event.transactionHash}`,
         type: 'sold',
         tokenId: event.tokenId.toString(),
-        price: formatEther(event.price),
+        price: event.price.toString(),
         seller: event.seller,
         buyer: event.buyer,
         timestamp: new Date(Number(event.timestamp) * 1000),
