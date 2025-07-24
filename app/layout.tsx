@@ -6,7 +6,8 @@ import { config } from './lib/wagmi'
 import "./globals.css"
 import { useState } from 'react'
 import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from './components/navigation/Navbar'
+import SafeNavbar from './components/navigation/SafeNavbar'
+import ParticleBackground from './components/effects/ParticleBackground'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,10 +45,14 @@ export default function RootLayout({
         <title>Token Bank - 数字资产银行</title>
         <meta name="description" content="基于区块链的数字资产银行应用" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white overflow-x-hidden`}>
         <WagmiProvider config={config}>
           <QueryClientProvider client={queryClient}>
-            <Navbar />
+            {/* 粒子背景效果 */}
+            <ParticleBackground />
+            
+            {/* Safe风格导航栏 */}
+            <SafeNavbar />
             <main>
               {children}
             </main>
