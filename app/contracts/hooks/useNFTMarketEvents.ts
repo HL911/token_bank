@@ -96,31 +96,47 @@ export const useNFTMarketEvents = () => {
           abi: NFTMarketABI,
           eventName: 'NFTListed',
           onLogs: async (logs) => {
-            for (const log of logs) {
-              const block = await publicClient.getBlock({ blockNumber: log.blockNumber })
-              const event: NFTListedEvent = {
-                listingId: log.args.listingId as bigint,
-                seller: log.args.seller as string,
-                nftContract: log.args.nftContract as string,
-                tokenId: log.args.tokenId as bigint,
-                price: log.args.price as bigint,
-                blockNumber: log.blockNumber,
-                transactionHash: log.transactionHash,
-                timestamp: Number(block.timestamp)
+            try {
+              for (const log of logs) {
+                const block = await publicClient.getBlock({ blockNumber: log.blockNumber })
+                const event: NFTListedEvent = {
+                  listingId: log.args.listingId as bigint,
+                  seller: log.args.seller as string,
+                  nftContract: log.args.nftContract as string,
+                  tokenId: log.args.tokenId as bigint,
+                  price: log.args.price as bigint,
+                  blockNumber: log.blockNumber,
+                  transactionHash: log.transactionHash,
+                  timestamp: Number(block.timestamp)
+                }
+                
+                console.log('📝 NFT 上架事件:', {
+                  listingId: event.listingId.toString(),
+                  seller: event.seller,
+                  nftContract: event.nftContract,
+                  tokenId: event.tokenId.toString(),
+                  price: event.price.toString(),
+                  transactionHash: event.transactionHash,
+                  timestamp: new Date(event.timestamp * 1000).toLocaleString()
+                })
+                
+                setListedEvents(prev => [event, ...prev])
               }
-              
-              console.log('📝 NFT 上架事件:', {
-                listingId: event.listingId.toString(),
-                seller: event.seller,
-                nftContract: event.nftContract,
-                tokenId: event.tokenId.toString(),
-                price: event.price.toString(),
-                transactionHash: event.transactionHash,
-                timestamp: new Date(event.timestamp * 1000).toLocaleString()
-              })
-              
-              setListedEvents(prev => [event, ...prev])
+            } catch (error) {
+              console.error('❌ 处理上架事件时出错:', error)
             }
+          },
+          onError: (error) => {
+            console.error('🔌 上架事件监听连接错误:', error)
+            console.log('🔄 尝试重新连接...')
+            // 延迟重连，避免频繁重连
+            setTimeout(() => {
+              if (isListening) {
+                console.log('🔄 重新启动上架事件监听')
+                stopListening()
+                setTimeout(startListening, 1000)
+              }
+            }, 3000)
           }
         })
 
@@ -130,33 +146,48 @@ export const useNFTMarketEvents = () => {
           abi: NFTMarketABI,
           eventName: 'NFTSold',
           onLogs: async (logs) => {
-            for (const log of logs) {
-              const block = await publicClient.getBlock({ blockNumber: log.blockNumber })
-              const event: NFTSoldEvent = {
-                listingId: log.args.listingId as bigint,
-                buyer: log.args.buyer as string,
-                seller: log.args.seller as string,
-                nftContract: log.args.nftContract as string,
-                tokenId: log.args.tokenId as bigint,
-                price: log.args.price as bigint,
-                blockNumber: log.blockNumber,
-                transactionHash: log.transactionHash,
-                timestamp: Number(block.timestamp)
+            try {
+              for (const log of logs) {
+                const block = await publicClient.getBlock({ blockNumber: log.blockNumber })
+                const event: NFTSoldEvent = {
+                  listingId: log.args.listingId as bigint,
+                  buyer: log.args.buyer as string,
+                  seller: log.args.seller as string,
+                  nftContract: log.args.nftContract as string,
+                  tokenId: log.args.tokenId as bigint,
+                  price: log.args.price as bigint,
+                  blockNumber: log.blockNumber,
+                  transactionHash: log.transactionHash,
+                  timestamp: Number(block.timestamp)
+                }
+                
+                console.log('💰 NFT 售出事件:', {
+                  listingId: event.listingId.toString(),
+                  buyer: event.buyer,
+                  seller: event.seller,
+                  nftContract: event.nftContract,
+                  tokenId: event.tokenId.toString(),
+                  price: event.price.toString(),
+                  transactionHash: event.transactionHash,
+                  timestamp: new Date(event.timestamp * 1000).toLocaleString()
+                })
+                
+                setSoldEvents(prev => [event, ...prev])
               }
-              
-              console.log('💰 NFT 售出事件:', {
-                listingId: event.listingId.toString(),
-                buyer: event.buyer,
-                seller: event.seller,
-                nftContract: event.nftContract,
-                tokenId: event.tokenId.toString(),
-                price: event.price.toString(),
-                transactionHash: event.transactionHash,
-                timestamp: new Date(event.timestamp * 1000).toLocaleString()
-              })
-              
-              setSoldEvents(prev => [event, ...prev])
+            } catch (error) {
+              console.error('❌ 处理售出事件时出错:', error)
             }
+          },
+          onError: (error) => {
+            console.error('🔌 售出事件监听连接错误:', error)
+            console.log('🔄 尝试重新连接...')
+            setTimeout(() => {
+              if (isListening) {
+                console.log('🔄 重新启动售出事件监听')
+                stopListening()
+                setTimeout(startListening, 1000)
+              }
+            }, 3000)
           }
         })
 
@@ -166,23 +197,38 @@ export const useNFTMarketEvents = () => {
           abi: NFTMarketABI,
           eventName: 'NFTListingCancelled',
           onLogs: async (logs) => {
-            for (const log of logs) {
-              const block = await publicClient.getBlock({ blockNumber: log.blockNumber })
-              const event: NFTListingCancelledEvent = {
-                listingId: log.args.listingId as bigint,
-                blockNumber: log.blockNumber,
-                transactionHash: log.transactionHash,
-                timestamp: Number(block.timestamp)
+            try {
+              for (const log of logs) {
+                const block = await publicClient.getBlock({ blockNumber: log.blockNumber })
+                const event: NFTListingCancelledEvent = {
+                  listingId: log.args.listingId as bigint,
+                  blockNumber: log.blockNumber,
+                  transactionHash: log.transactionHash,
+                  timestamp: Number(block.timestamp)
+                }
+                
+                console.log('❌ NFT 取消上架事件:', {
+                  listingId: event.listingId.toString(),
+                  transactionHash: event.transactionHash,
+                  timestamp: new Date(event.timestamp * 1000).toLocaleString()
+                })
+                
+                setCancelledEvents(prev => [event, ...prev])
               }
-              
-              console.log('❌ NFT 取消上架事件:', {
-                listingId: event.listingId.toString(),
-                transactionHash: event.transactionHash,
-                timestamp: new Date(event.timestamp * 1000).toLocaleString()
-              })
-              
-              setCancelledEvents(prev => [event, ...prev])
+            } catch (error) {
+              console.error('❌ 处理取消事件时出错:', error)
             }
+          },
+          onError: (error) => {
+            console.error('🔌 取消事件监听连接错误:', error)
+            console.log('🔄 尝试重新连接...')
+            setTimeout(() => {
+              if (isListening) {
+                console.log('🔄 重新启动取消事件监听')
+                stopListening()
+                setTimeout(startListening, 1000)
+              }
+            }, 3000)
           }
         })
 
