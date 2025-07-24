@@ -105,31 +105,51 @@ export default function Home() {
         </div>
         
         {/* 页面底部信息 */}
-        <div className="mt-12 text-center">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">🚀 功能特性</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-              <div className="flex items-center justify-center space-x-2">
-                <span className="text-green-500">✅</span>
-                <span>模块化架构设计</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <span className="text-blue-500">🔗</span>
-                <span>基于 viem 和 wagmi</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <span className="text-purple-500">🔐</span>
-                <span>安全的钱包连接</span>
-              </div>
+        <AnimatedCard delay={1.5} className="mt-12">
+          <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl text-center">
+            <motion.h3 
+              className="text-2xl font-bold bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent mb-6"
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              🚀 功能特性
+            </motion.h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <motion.div 
+                className="flex items-center justify-center space-x-3 p-4 bg-green-500/10 border border-green-500/30 rounded-xl"
+                whileHover={{ scale: 1.05 }}
+              >
+                <span className="text-green-400 text-xl">✅</span>
+                <span className="text-green-300 font-medium">模块化架构设计</span>
+              </motion.div>
+              <motion.div 
+                className="flex items-center justify-center space-x-3 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl"
+                whileHover={{ scale: 1.05 }}
+              >
+                <span className="text-blue-400 text-xl">🔗</span>
+                <span className="text-blue-300 font-medium">基于 viem 和 wagmi</span>
+              </motion.div>
+              <motion.div 
+                className="flex items-center justify-center space-x-3 p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl"
+                whileHover={{ scale: 1.05 }}
+              >
+                <span className="text-purple-400 text-xl">🔐</span>
+                <span className="text-purple-300 font-medium">安全的钱包连接</span>
+              </motion.div>
             </div>
             
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500">
+            <motion.div 
+              className="mt-6 pt-6 border-t border-gray-700/50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2 }}
+            >
+              <p className="text-sm text-gray-400">
                 💡 提示：这是演示版本，实际使用需要连接到真实的智能合约和区块链网络
               </p>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </AnimatedCard>
       </div>
     </div>
   )

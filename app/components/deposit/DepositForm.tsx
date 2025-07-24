@@ -79,8 +79,8 @@ export default function DepositForm() {
   }
 
   const fallbackContent = (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">💰 存款功能</h2>
+    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+      <h2 className="text-xl font-bold mb-4 text-white">💰 存款功能</h2>
       <div className="animate-pulse space-y-4">
         <div className="h-4 bg-gray-300 rounded w-32"></div>
         <div className="h-10 bg-gray-300 rounded"></div>
@@ -92,8 +92,8 @@ export default function DepositForm() {
   if (!isConnected) {
     return (
       <ClientWrapper fallback={fallbackContent}>
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">💰 存款功能</h2>
+        <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+          <h2 className="text-xl font-bold mb-4 text-white">💰 存款功能</h2>
           <p className="text-gray-500">请先连接钱包使用存款功能</p>
         </div>
       </ClientWrapper>
@@ -102,8 +102,8 @@ export default function DepositForm() {
 
   return (
     <ClientWrapper fallback={fallbackContent}>
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">💰 存款功能</h2>
+      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+      <h2 className="text-xl font-bold mb-4 text-white">💰 存款功能</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -132,7 +132,7 @@ export default function DepositForm() {
           <button
             type="submit"
             disabled={!amount || (step !== 'input' && step !== 'deposit') || isApproving || isApproveConfirming || isDepositing || isDepositConfirming}
-            className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-500/25"
           >
             {step === 'approve' && (isApproving || isApproveConfirming) ? '授权中...' :
              step === 'deposit' && (isDepositing || isDepositConfirming) ? '存款中...' :
@@ -180,9 +180,9 @@ export default function DepositForm() {
       )}
 
       {/* 使用说明 */}
-      <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-        <p className="text-gray-700 text-sm font-medium mb-2">💡 存款流程说明：</p>
-        <ol className="text-gray-600 text-sm space-y-1">
+      <div className="mt-4 p-4 bg-gradient-to-br from-blue-900/30 to-blue-800/30 border border-blue-500/30 rounded-lg">
+        <p className="text-blue-200 text-sm font-medium mb-2">💡 存款流程说明：</p>
+        <ol className="text-blue-100/80 text-sm space-y-1">
           <li>1. 输入要存款的{tokenSymbol || 'MyToken'}数量</li>
           <li>2. 如需要，系统会先请求授权Token使用权限</li>
           <li>3. 授权完成后，执行存款操作将Token转入银行合约</li>

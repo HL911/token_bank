@@ -42,10 +42,10 @@ export default function TokenBalance() {
   }
 
   const fallbackContent = (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Token余额</h2>
+    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+      <h2 className="text-xl font-bold mb-4 text-white">Token余额</h2>
       <div className="space-y-4">
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-gray-800/50 rounded-lg p-4">
           <div className="animate-pulse">
             <div className="h-6 bg-gray-300 rounded w-20 mb-2"></div>
             <div className="h-4 bg-gray-300 rounded w-32"></div>
@@ -58,8 +58,8 @@ export default function TokenBalance() {
   if (!isConnected) {
     return (
       <ClientWrapper fallback={fallbackContent}>
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Token余额</h2>
+        <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+          <h2 className="text-xl font-bold mb-4 text-white">Token余额</h2>
           <p className="text-gray-500">请先连接钱包查看余额</p>
         </div>
       </ClientWrapper>
@@ -68,12 +68,12 @@ export default function TokenBalance() {
 
   return (
     <ClientWrapper fallback={fallbackContent}>
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Token余额</h2>
+        <h2 className="text-xl font-bold text-white">Token余额</h2>
         <button
           onClick={handleRefresh}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white px-3 py-1 rounded-lg text-sm transition-all duration-300 shadow-lg hover:shadow-green-500/25"
         >
           刷新
         </button>
@@ -81,10 +81,10 @@ export default function TokenBalance() {
 
       <div className="space-y-4">
         {/* ETH余额 */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-gray-800/50 rounded-lg p-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-medium text-gray-800">ETH</h3>
+              <h3 className="font-medium text-white">ETH</h3>
               <p className="text-sm text-gray-600">以太坊</p>
             </div>
             <div className="text-right">
@@ -95,7 +95,7 @@ export default function TokenBalance() {
                 </div>
               ) : (
                 <>
-                  <p className="text-lg font-bold text-gray-800">
+                  <p className="text-lg font-bold text-white">
                     {formatBalance(ethBalance?.value)} ETH
                   </p>
                   <p className="text-sm text-gray-600">
@@ -108,10 +108,10 @@ export default function TokenBalance() {
         </div>
 
         {/* MyToken余额 */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-gray-800/50 rounded-lg p-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-medium text-gray-800">{tokenSymbol || 'MyToken'}</h3>
+              <h3 className="font-medium text-white">{tokenSymbol || 'MyToken'}</h3>
               <p className="text-sm text-gray-600">{tokenName || 'My Token'}</p>
             </div>
             <div className="text-right">
@@ -122,7 +122,7 @@ export default function TokenBalance() {
                 </div>
               ) : (
                 <>
-                  <p className="text-lg font-bold text-gray-800">
+                  <p className="text-lg font-bold text-white">
                     {myTokenBalance ? formatUnits(myTokenBalance as bigint, tokenDecimals || 18) : '0.0000'} {tokenSymbol || 'MTK'}
                   </p>
                   <p className="text-sm text-gray-600">
@@ -135,10 +135,10 @@ export default function TokenBalance() {
         </div>
 
         {/* TokenBank中的余额 */}
-        <div className="bg-green-50 rounded-lg p-4">
+        <div className="bg-green-900/30 rounded-lg p-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="font-medium text-gray-800">银行存款</h3>
+              <h3 className="font-medium text-white">银行存款</h3>
               <p className="text-sm text-gray-600">TokenBank中的{tokenSymbol || 'MyToken'}余额</p>
             </div>
             <div className="text-right">

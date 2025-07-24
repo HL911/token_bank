@@ -113,8 +113,8 @@ export default function QueryForm() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">🔍 查询功能</h2>
+    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+      <h2 className="text-xl font-bold mb-4 text-white">🔍 查询功能</h2>
       
       <form onSubmit={handleQuery} className="space-y-4">
         <div>
@@ -158,7 +158,7 @@ export default function QueryForm() {
           <button
             type="submit"
             disabled={!queryInput.trim() || isLoading}
-            className="flex-1 bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-500/25"
           >
             {isLoading ? '查询中...' : '开始查询'}
           </button>
@@ -166,7 +166,7 @@ export default function QueryForm() {
           <button
             type="button"
             onClick={() => setQueryInput('')}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-800/50 transition-colors"
           >
             清空
           </button>
@@ -177,7 +177,7 @@ export default function QueryForm() {
       {queryResults.length > 0 && (
         <div className="mt-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium text-gray-800">查询结果</h3>
+            <h3 className="text-lg font-medium text-white">查询结果</h3>
             <button
               onClick={clearResults}
               className="text-sm text-red-600 hover:text-red-800"
@@ -188,7 +188,7 @@ export default function QueryForm() {
           
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {queryResults.map((result, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4">
+              <div key={index} className="bg-gray-800/50 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-sm font-medium text-gray-600">
                     {result.type === 'balance' && '💰 余额查询'}
@@ -200,7 +200,7 @@ export default function QueryForm() {
                   </span>
                 </div>
                 
-                <div className="text-sm text-gray-800">
+                <div className="text-sm text-white">
                   {result.type === 'balance' && (
                     <div>
                       <p><strong>地址:</strong> {result.data.address.slice(0, 10)}...{result.data.address.slice(-8)}</p>
@@ -230,8 +230,8 @@ export default function QueryForm() {
       )}
 
       {/* 使用说明 */}
-      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-blue-800 text-sm">
+      <div className="mt-4 p-4 bg-gradient-to-br from-purple-900/30 to-purple-800/30 border border-purple-500/30 rounded-lg">
+        <p className="text-purple-200 text-sm">
           💡 提示：查询功能支持余额查询、交易查询和地址验证。实际应用中需要连接到区块链API获取完整数据。
         </p>
       </div>

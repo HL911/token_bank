@@ -67,16 +67,16 @@ export default function TransferForm() {
 
   if (!isConnected) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">💸 转账功能</h2>
+      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+        <h2 className="text-xl font-bold mb-4 text-white">💸 转账功能</h2>
         <p className="text-gray-500">请先连接钱包使用转账功能</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">💸 转账功能</h2>
+    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+      <h2 className="text-xl font-bold mb-4 text-white">💸 转账功能</h2>
       
       <form onSubmit={handleTransfer} className="space-y-4">
         <div>
@@ -122,7 +122,7 @@ export default function TransferForm() {
           <button
             type="submit"
             disabled={!amount || !toAddress || !isValidAddress(toAddress) || isLoading || isPending || isConfirming}
-            className="flex-1 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-500/25"
           >
             {isPending || isConfirming ? '处理中...' : '确认转账'}
           </button>
@@ -153,9 +153,9 @@ export default function TransferForm() {
       )}
 
       {/* 安全提示 */}
-      <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-        <p className="text-orange-800 text-sm font-medium mb-1">🔒 安全提示：</p>
-        <ul className="text-orange-700 text-sm space-y-1">
+      <div className="mt-4 p-4 bg-gradient-to-br from-orange-900/30 to-orange-800/30 border border-orange-500/30 rounded-lg">
+        <p className="text-orange-200 text-sm font-medium mb-1">🔒 安全提示：</p>
+        <ul className="text-orange-100/80 text-sm space-y-1">
           <li>• 请仔细核对接收地址</li>
           <li>• 转账操作不可撤销</li>
           <li>• 确保网络费用充足</li>

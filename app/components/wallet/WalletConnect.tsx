@@ -33,38 +33,40 @@ export default function WalletConnect() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">钱包连接</h2>
+    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+      <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-green-400 bg-clip-text text-transparent">🔗 钱包连接</h2>
       
       {!isConnected ? (
-        <div className="space-y-3">
-          <p className="text-gray-600 mb-4">请选择钱包进行连接：</p>
+        <div className="space-y-4">
+          <p className="text-gray-300 mb-6">请选择钱包进行连接：</p>
           {connectors
-            // .filter(connector => connector.name === 'MetaMask')
             .map((connector) => (
               <button
                 key={connector.uid}
                 onClick={() => handleConnect(connector)}
                 disabled={isPending || isConnecting}
-                className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-green-500/25 transform hover:scale-105 disabled:hover:scale-100"
               >
-                {isConnecting ? '连接中...' : `连接 ${connector.name}`}
+                {isConnecting ? '🔄 连接中...' : `连接 ${connector.name}`}
               </button>
             ))}
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="text-green-800 font-medium">✅ 钱包已连接</p>
-            <p className="text-green-600 text-sm mt-1">
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-green-900/40 to-green-800/40 backdrop-blur-xl border border-green-500/30 rounded-xl p-4">
+            <p className="text-green-300 font-medium flex items-center gap-2">
+              <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+              钱包已连接
+            </p>
+            <p className="text-green-200/80 text-sm mt-2 font-mono">
               地址: {formatAddress(address!)}
             </p>
           </div>
           <button
             onClick={handleDisconnect}
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-orange-500/25 transform hover:scale-105"
           >
-            断开钱包
+            🔌 断开钱包
           </button>
         </div>
       )}
