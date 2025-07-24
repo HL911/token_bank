@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { AnimatedCard, FadeInUp, SlideInLeft, PulseGlow } from './components/animations/AnimatedCard'
-import WalletConnect from './components/wallet/WalletConnect'
 import TokenBalance from './components/balance/TokenBalance'
 import DepositForm from './components/deposit/DepositForm'
 import WithdrawForm from './components/withdraw/WithdrawForm'
@@ -59,10 +58,6 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4">
-        {/* 钱包连接模块 */}
-        <AnimatedCard delay={0.8} className="mb-8">
-          <WalletConnect />
-        </AnimatedCard>
         
         {/* 功能模块网格布局 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

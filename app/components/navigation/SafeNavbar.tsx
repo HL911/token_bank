@@ -2,12 +2,44 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAccount, useDisconnect } from 'wagmi'
+import WalletModal from '../wallet/WalletModal'
+
+// 格式化地址显示
+const formatAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
 
 export default function SafeNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+  const { address, isConnected } = useAccount()
+  const { disconnect } = useDisconnect()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const handleDisconnect = async () => {
+    try {
+      await disconnect()
+    } catch (error) {
+      console.error('断开钱包失败:', error)
+    }
+  }
+
+  const openWalletModal = () => {
+    setIsWalletModalOpen(true)
+  }
+
+  const closeWalletModal = () => {
+    setIsWalletModalOpen(false)
+  }
 
   return (
+    <>
     <motion.nav 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -31,13 +63,42 @@ export default function SafeNavbar() {
           <div className="hidden md:flex items-center space-x-8">
             <NavLink href="/">首页</NavLink>
             <NavLink href="/nft-market">NFT 市场</NavLink>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-gradient-to-r from-green-500 to-green-600 text-black px-6 py-2 rounded-full font-medium hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-lg hover:shadow-green-500/25"
-            >
-              连接钱包
-            </motion.button>
+            {!isClient ? (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-2 rounded-full font-medium transition-all duration-300"
+                disabled
+              >
+                加载中...
+              </motion.button>
+            ) : isConnected && address ? (
+              <div className="flex items-center space-x-2">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-400 px-4 py-2 rounded-full font-medium border border-green-500/30"
+                >
+                  {formatAddress(address)}
+                </motion.div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleDisconnect}
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-medium hover:from-orange-400 hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
+                >
+                  断开
+                </motion.button>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={openWalletModal}
+                className="bg-gradient-to-r from-green-500 to-green-600 text-black px-6 py-2 rounded-full font-medium hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-lg hover:shadow-green-500/25"
+              >
+                连接钱包
+              </motion.button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -59,25 +120,49 @@ export default function SafeNavbar() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden"
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden bg-black/90 backdrop-blur-xl border-t border-gray-800/50"
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-gray-900/50 rounded-lg mt-2">
+            <div className="px-2 pt-2 pb-3 space-y-1">
               <MobileNavLink href="/">首页</MobileNavLink>
               <MobileNavLink href="/nft-market">NFT 市场</MobileNavLink>
-              <div className="pt-2">
-                <button className="w-full bg-gradient-to-r from-green-500 to-green-600 text-black px-4 py-2 rounded-full font-medium">
+              {!isClient ? (
+                <div className="text-gray-400 px-3 py-2">加载中...</div>
+              ) : isConnected && address ? (
+                <div className="space-y-2">
+                  <div className="text-green-400 px-3 py-2 font-mono text-sm">
+                    {formatAddress(address)}
+                  </div>
+                  <button
+                    onClick={handleDisconnect}
+                    className="w-full text-left bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2 rounded-lg font-medium hover:from-orange-400 hover:to-orange-500 transition-all duration-300"
+                  >
+                    断开钱包
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={openWalletModal}
+                  className="w-full text-left bg-gradient-to-r from-green-500 to-green-600 text-black px-3 py-2 rounded-lg font-medium hover:from-green-400 hover:to-green-500 transition-all duration-300"
+                >
                   连接钱包
                 </button>
-              </div>
+              )}
             </div>
           </motion.div>
         )}
       </div>
     </motion.nav>
+    
+    {/* 钱包连接模态框 */}
+    <WalletModal 
+      isOpen={isWalletModalOpen} 
+      onClose={closeWalletModal} 
+    />
+    </>
   )
 }
 
