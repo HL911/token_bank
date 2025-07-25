@@ -4,12 +4,27 @@
 import { useState } from 'react'
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther, isAddress } from 'viem'
+import ClientWrapper from '../ClientWrapper'
 
 export default function TransferForm() {
   const { address, isConnected } = useAccount()
   const [toAddress, setToAddress] = useState('')
   const [amount, setAmount] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  
+  // 加载状态的fallback内容
+  const fallbackContent = (
+    <div className="flex flex-col h-full">
+      <h2 className="text-xl font-bold mb-4 text-white">💸 转账功能</h2>
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+        <div className="h-10 bg-gray-300 rounded"></div>
+        <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+        <div className="h-10 bg-gray-300 rounded"></div>
+        <div className="h-10 bg-gray-300 rounded w-1/3"></div>
+      </div>
+    </div>
+  )
   
   const { sendTransaction, data: hash, isPending } = useSendTransaction()
   
@@ -67,10 +82,12 @@ export default function TransferForm() {
 
   if (!isConnected) {
     return (
-      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
-        <h2 className="text-xl font-bold mb-4 text-white">💸 转账功能</h2>
-        <p className="text-gray-500">请先连接钱包使用转账功能</p>
-      </div>
+      <ClientWrapper fallback={fallbackContent}>
+        <div className="flex flex-col h-full">
+          <h2 className="text-xl font-bold mb-4 text-white">💸 转账功能</h2>
+          <p className="text-gray-500">请先连接钱包使用转账功能</p>
+        </div>
+      </ClientWrapper>
     )
   }
 

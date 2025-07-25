@@ -59,44 +59,44 @@ export default function Home() {
 
       <div className="container mx-auto px-4">
         
-        {/* 功能模块网格布局 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 左侧列 */}
-          <div className="space-y-8">
-            {/* 余额显示模块 */}
-            <SlideInLeft delay={1.0}>
-              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
-                <TokenBalance />
-              </div>
-            </SlideInLeft>
-            
+        {/* 功能模块布局 */}
+        <div className="space-y-8">
+          {/* Token余额模块 - 顶部全宽 */}
+          <FadeInUp delay={0.8}>
+            <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+              <TokenBalance />
+            </div>
+          </FadeInUp>
+          
+          {/* 存款和取款功能模块 - 并排显示 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* 存款功能模块 */}
-            <SlideInLeft delay={1.2}>
-              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+            <SlideInLeft delay={1.0}>
+              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300 h-[600px] flex flex-col">
                 <DepositForm />
               </div>
             </SlideInLeft>
             
             {/* 取款功能模块 */}
-            <SlideInLeft delay={1.4}>
-              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+            <SlideInLeft delay={1.2}>
+              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300 h-[600px] flex flex-col">
                 <WithdrawForm />
               </div>
             </SlideInLeft>
           </div>
           
-          {/* 右侧列 */}
-          <div className="space-y-8">
+          {/* 转账和查询功能模块 - 并排显示 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* 转账功能模块 */}
-            <AnimatedCard delay={1.1}>
-              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+            <AnimatedCard delay={1.4}>
+              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300 h-[500px] flex flex-col">
                 <TransferForm />
               </div>
             </AnimatedCard>
             
             {/* 查询功能模块 */}
-            <AnimatedCard delay={1.3}>
-              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+            <AnimatedCard delay={1.6}>
+              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300 h-[500px] flex flex-col">
                 <QueryForm />
               </div>
             </AnimatedCard>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { usePublicClient } from 'wagmi'
-import { parseAbiItem } from 'viem'
 import { CONTRACT_ADDRESSES } from '../addresses'
 import NFTMarketABI from '../abis/NFTMarket.json'
 

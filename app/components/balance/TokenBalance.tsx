@@ -79,58 +79,80 @@ export default function TokenBalance() {
         </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* ETH余额 */}
-        <div className="bg-gray-800/50 rounded-lg p-4">
+        <div className="bg-gray-800/50 rounded-lg p-3">
           <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-medium text-white">ETH</h3>
-              <p className="text-sm text-gray-600">以太坊</p>
-            </div>
-            <div className="text-right">
-              {ethLoading ? (
-                <div className="animate-pulse">
-                  <div className="h-6 bg-gray-300 rounded w-20 mb-1"></div>
-                  <div className="h-4 bg-gray-300 rounded w-16"></div>
+            {ethLoading ? (
+              <>
+                <div className="flex items-center space-x-2">
+                  <div className="animate-pulse">
+                    <div className="h-5 bg-gray-300 rounded w-12"></div>
+                  </div>
+                  <span className="text-gray-600">•</span>
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                  </div>
                 </div>
-              ) : (
-                <>
+                <div className="animate-pulse">
+                  <div className="h-5 bg-gray-300 rounded w-24"></div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-medium text-white">ETH</h3>
+                  <span className="text-gray-600">•</span>
+                  <p className="text-sm text-gray-400">以太坊</p>
+                </div>
+                <div className="flex items-center space-x-3">
                   <p className="text-lg font-bold text-white">
                     {formatBalance(ethBalance?.value)} ETH
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     ${ethBalance?.value ? (parseFloat(formatBalance(ethBalance.value)) * 2000).toFixed(2) : '0.00'}
                   </p>
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* MyToken余额 */}
-        <div className="bg-gray-800/50 rounded-lg p-4">
+        <div className="bg-gray-800/50 rounded-lg p-3">
           <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-medium text-white">{tokenSymbol || 'MyToken'}</h3>
-              <p className="text-sm text-gray-600">{tokenName || 'My Token'}</p>
-            </div>
-            <div className="text-right">
-              {myTokenLoading ? (
-                <div className="animate-pulse">
-                  <div className="h-6 bg-gray-300 rounded w-20 mb-1"></div>
-                  <div className="h-4 bg-gray-300 rounded w-16"></div>
+            {myTokenLoading ? (
+              <>
+                <div className="flex items-center space-x-2">
+                  <div className="animate-pulse">
+                    <div className="h-5 bg-gray-300 rounded w-16"></div>
+                  </div>
+                  <span className="text-gray-600">•</span>
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-300 rounded w-20"></div>
+                  </div>
                 </div>
-              ) : (
-                <>
+                <div className="animate-pulse">
+                  <div className="h-5 bg-gray-300 rounded w-28"></div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-medium text-white">{tokenSymbol || 'MyToken'}</h3>
+                  <span className="text-gray-600">•</span>
+                  <p className="text-sm text-gray-400">{tokenName || 'My Token'}</p>
+                </div>
+                <div className="flex items-center space-x-3">
                   <p className="text-lg font-bold text-white">
                     {myTokenBalance ? formatUnits(myTokenBalance as bigint, tokenDecimals || 18) : '0.0000'} {tokenSymbol || 'MTK'}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     钱包余额
                   </p>
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 

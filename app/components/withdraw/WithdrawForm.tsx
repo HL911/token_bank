@@ -83,10 +83,10 @@ export default function WithdrawForm() {
 
   return (
     <ClientWrapper fallback={fallbackContent}>
-      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
-      <h2 className="text-xl font-bold mb-4 text-white">💸 取款功能</h2>
+      <div className="flex flex-col h-full">
+        <h2 className="text-xl font-bold mb-4 text-white">🏦 取款功能</h2>
       
-      <form onSubmit={handleWithdraw} className="space-y-4">
+      <form onSubmit={handleWithdraw} className="space-y-4 flex-1">
         <div>
           <label htmlFor="withdraw-amount" className="block text-sm font-medium text-gray-700 mb-2">
             取款金额 ({tokenSymbol || 'MyToken'})
@@ -102,11 +102,11 @@ export default function WithdrawForm() {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
             disabled={isWithdrawing || isWithdrawConfirming}
           />
-          {bankBalance && (
+          {bankBalance ? (
             <p className="text-sm text-gray-500 mt-1">
               银行存款余额: {formatUnits(bankBalance as bigint, tokenDecimals || 18)} {tokenSymbol || 'MTK'}
             </p>
-          )}
+          ) : null}
         </div>
 
         <div className="flex space-x-3">

@@ -102,7 +102,7 @@ export default function DepositForm() {
 
   return (
     <ClientWrapper fallback={fallbackContent}>
-      <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
+      <div className="flex flex-col h-full">
       <h2 className="text-xl font-bold mb-4 text-white">💰 存款功能</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -121,11 +121,11 @@ export default function DepositForm() {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={step !== 'input'}
           />
-          {myTokenBalance && typeof myTokenBalance === 'bigint' && (
+          {myTokenBalance && typeof myTokenBalance === 'bigint' ? (
             <p className="text-sm text-gray-500 mt-1">
               可用余额: {formatUnits(myTokenBalance, typeof tokenDecimals === 'number' ? tokenDecimals : 18)} {tokenSymbol || 'MTK'}
             </p>
-          )}
+          ) : null}
         </div>
 
         <div className="flex space-x-3">
@@ -151,6 +151,7 @@ export default function DepositForm() {
       </form>
 
       {/* 交易状态显示 */}
+      <div className="flex-1 mt-4">
       {step === 'approve' && (
         <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-yellow-800 text-sm font-medium">步骤 1/2: 授权Token</p>
@@ -188,6 +189,7 @@ export default function DepositForm() {
           <li>3. 授权完成后，执行存款操作将Token转入银行合约</li>
           <li>4. 存款成功后，可在余额模块查看银行存款</li>
         </ol>
+      </div>
       </div>
       </div>
     </ClientWrapper>

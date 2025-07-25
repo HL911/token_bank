@@ -1,9 +1,12 @@
 'use client'
 
-// 查询功能组件 - 处理交易和余额查询
+// 查询功能组件 - 查询铱包余额和合约信息
 import { useState } from 'react'
 import { useAccount, useBalance } from 'wagmi'
-import { isAddress } from 'viem'
+import { formatUnits, isAddress } from 'viem'
+import { useMyTokenBalance, useMyTokenInfo } from '../../contracts/hooks/useMyToken'
+import { useTokenBankBalance } from '../../contracts/hooks/useTokenBank'
+import ClientWrapper from '../ClientWrapper'
 
 interface QueryResult {
   type: 'balance' | 'transaction' | 'address'
@@ -17,6 +20,20 @@ export default function QueryForm() {
   const [queryInput, setQueryInput] = useState('')
   const [queryResults, setQueryResults] = useState<QueryResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
+
+  // 加载状态的fallback内容
+  const fallbackContent = (
+    <div className="flex flex-col h-full">
+      <h2 className="text-xl font-bold mb-4 text-white">🔍 查询功能</h2>
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+        <div className="h-10 bg-gray-300 rounded"></div>
+        <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+        <div className="h-10 bg-gray-300 rounded"></div>
+        <div className="h-10 bg-gray-300 rounded w-1/3"></div>
+      </div>
+    </div>
+  )
 
   // 查询余额
   const { data: queriedBalance, refetch: refetchBalance } = useBalance({
@@ -113,10 +130,11 @@ export default function QueryForm() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/10 transition-all duration-300">
-      <h2 className="text-xl font-bold mb-4 text-white">🔍 查询功能</h2>
+    <ClientWrapper fallback={fallbackContent}>
+      <div className="flex flex-col h-full">
+        <h2 className="text-xl font-bold mb-4 text-white">🔍 查询功能</h2>
       
-      <form onSubmit={handleQuery} className="space-y-4">
+      <form onSubmit={handleQuery} className="space-y-4 flex-1">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             查询类型
@@ -232,9 +250,10 @@ export default function QueryForm() {
       {/* 使用说明 */}
       <div className="mt-4 p-4 bg-gradient-to-br from-purple-900/30 to-purple-800/30 border border-purple-500/30 rounded-lg">
         <p className="text-purple-200 text-sm">
-          💡 提示：查询功能支持余额查询、交易查询和地址验证。实际应用中需要连接到区块链API获取完整数据。
+          💡 提示：查询功能支持余额查询、交易查询和地址验证。实际应用中需要连接到区块链 API获取完整数据。
         </p>
       </div>
-    </div>
+      </div>
+    </ClientWrapper>
   )
 }
