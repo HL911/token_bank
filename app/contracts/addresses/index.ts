@@ -7,7 +7,7 @@ export const CONTRACT_ADDRESSES = {
   TOKEN_BANK: '0xbb4498b24fc56157de369214b271588c401173fb' as `0x${string}`,
 
   // NFTMarket合约地址
-  NFT_MARKET: '0x4c375836912a872989f504c81b90d14272d249ba' as `0x${string}`,
+  NFT_MARKET: '0x8a950fe1239daf682ed010e39660b9c4b3397ed9' as `0x${string}`,
 
   // MyERC721合约地址
   MY_ERC721: '0x3135e708310121e5ed78f0d4d8881ee8abe104c8' as `0x${string}`,

@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const navItems = [
     { name: 'Token Bank', href: '/' },
-    { name: 'NFT 市场', href: '/nft-market' }
+    { name: 'NFT 监听', href: '/nft-listen' }
   ]
 
   return (

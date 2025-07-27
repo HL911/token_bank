@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
-import WalletModal from '../wallet/WalletModal'
+import { useAccount } from 'wagmi'
+import { useAppKit } from '@reown/appkit/react'
 
 // 格式化地址显示
 const formatAddress = (address: string) => {
@@ -13,29 +13,16 @@ const formatAddress = (address: string) => {
 
 export default function SafeNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const { address, isConnected } = useAccount()
-  const { disconnect } = useDisconnect()
+  const { open } = useAppKit()
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  const handleDisconnect = async () => {
-    try {
-      await disconnect()
-    } catch (error) {
-      console.error('断开钱包失败:', error)
-    }
-  }
-
   const openWalletModal = () => {
-    setIsWalletModalOpen(true)
-  }
-
-  const closeWalletModal = () => {
-    setIsWalletModalOpen(false)
+    open()
   }
 
   return (
@@ -62,7 +49,9 @@ export default function SafeNavbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <NavLink href="/">首页</NavLink>
-            <NavLink href="/nft-market">NFT 市场</NavLink>
+            <NavLink href="/nft-market">NFT 监听</NavLink>
+            <NavLink href="/nft-marketplace">NFT 市场</NavLink>
+            <NavLink href="/mint-nft">铸造 NFT</NavLink>
             {!isClient ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -83,10 +72,10 @@ export default function SafeNavbar() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={handleDisconnect}
+                  onClick={openWalletModal}
                   className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-full font-medium hover:from-orange-400 hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-orange-500/25"
                 >
-                  断开
+                  管理
                 </motion.button>
               </div>
             ) : (
@@ -128,7 +117,9 @@ export default function SafeNavbar() {
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               <MobileNavLink href="/">首页</MobileNavLink>
-              <MobileNavLink href="/nft-market">NFT 市场</MobileNavLink>
+              <MobileNavLink href="/nft-market">NFT 监听</MobileNavLink>
+              <MobileNavLink href="/nft-marketplace">NFT 市场</MobileNavLink>
+              <MobileNavLink href="/mint-nft">铸造 NFT</MobileNavLink>
               {!isClient ? (
                 <div className="text-gray-400 px-3 py-2">加载中...</div>
               ) : isConnected && address ? (
@@ -137,10 +128,10 @@ export default function SafeNavbar() {
                     {formatAddress(address)}
                   </div>
                   <button
-                    onClick={handleDisconnect}
+                    onClick={openWalletModal}
                     className="w-full text-left bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2 rounded-lg font-medium hover:from-orange-400 hover:to-orange-500 transition-all duration-300"
                   >
-                    断开钱包
+                    管理钱包
                   </button>
                 </div>
               ) : (
@@ -157,11 +148,7 @@ export default function SafeNavbar() {
       </div>
     </motion.nav>
     
-    {/* 钱包连接模态框 */}
-    <WalletModal 
-      isOpen={isWalletModalOpen} 
-      onClose={closeWalletModal} 
-    />
+
     </>
   )
 }

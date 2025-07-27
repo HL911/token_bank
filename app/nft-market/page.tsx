@@ -26,13 +26,6 @@ export default function NFTMarketPage() {
     setIsClient(true)
   }, [])
 
-  // 页面加载完成后自动开始监听
-  useEffect(() => {
-    if (isClient && !isListening) {
-      startListening()
-    }
-  }, [isClient, isListening, startListening])
-
   // 将原始事件转换为统一的NFTEvent格式
   const allEvents: NFTEvent[] = useMemo(() => {
     const events: NFTEvent[] = []
