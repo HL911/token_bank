@@ -1,15 +1,19 @@
 'use client'
 
-// 转账功能组件 - 处理token转账操作
+// 转账功能组件 - 处理ERC20代币转账操作
 import { useState } from 'react'
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi'
-import { parseEther, isAddress } from 'viem'
+import { useAccount } from 'wagmi'
+import { isAddress } from 'viem'
+import { useERC20Transfer, useERC20TokenInfo } from '../../contracts/hooks/useERC20Transfer'
+import { CONTRACT_ADDRESSES } from '../../contracts/addresses'
 import ClientWrapper from '../ClientWrapper'
 
 export default function TransferForm() {
   const { address, isConnected } = useAccount()
   const [toAddress, setToAddress] = useState('')
   const [amount, setAmount] = useState('')
+  const [selectedToken, setSelectedToken] = useState<string>(CONTRACT_ADDRESSES.MY_TOKEN)
+  const [customTokenAddress, setCustomTokenAddress] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   
   // 加载状态的fallback内容
@@ -26,12 +30,9 @@ export default function TransferForm() {
     </div>
   )
   
-  const { sendTransaction, data: hash, isPending } = useSendTransaction()
-  
-  // 等待交易确认
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-    hash,
-  })
+  const { transferERC20, hash, isPending, isConfirming, isSuccess } = useERC20Transfer()
+  const tokenAddress = selectedToken === 'custom' ? customTokenAddress : selectedToken
+  const { symbol } = useERC20TokenInfo(tokenAddress)
 
   // 验证地址格式
   const isValidAddress = (addr: string) => {
@@ -60,14 +61,12 @@ export default function TransferForm() {
     try {
       setIsLoading(true)
       
-      // 执行转账交易
-      await sendTransaction({
-        to: toAddress as `0x${string}`,
-        value: parseEther(amount),
-      })
+      // 执行ERC20代币转账
+      const finalTokenAddress = selectedToken === 'custom' ? customTokenAddress : selectedToken
+      await transferERC20(toAddress, amount, finalTokenAddress)
       
     } catch (error) {
-      console.error('转账失败:', error)
+      console.error('ERC20转账失败:', error)
       alert('转账失败，请重试')
     } finally {
       setIsLoading(false)
@@ -119,8 +118,34 @@ export default function TransferForm() {
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            选择代币
+          </label>
+          <select
+            value={selectedToken}
+            onChange={(e) => setSelectedToken(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+            disabled={isLoading || isPending || isConfirming}
+          >
+            <option value={CONTRACT_ADDRESSES.MY_TOKEN}>MTK - MyToken</option>
+            <option value="custom">自定义代币地址</option>
+          </select>
+          
+          {selectedToken === 'custom' && (
+            <input
+              type="text"
+              value={customTokenAddress}
+              placeholder="请输入ERC20代币合约地址"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+              onChange={(e) => setCustomTokenAddress(e.target.value)}
+              disabled={isLoading || isPending || isConfirming}
+            />
+          )}
+        </div>
+
+        <div>
           <label htmlFor="transfer-amount" className="block text-sm font-medium text-gray-700 mb-2">
-            转账金额 (ETH)
+            转账金额 ({symbol || 'MTK'})
           </label>
           <input
             id="transfer-amount"

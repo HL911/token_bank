@@ -1,11 +1,11 @@
 'use client'
 
-// 查询功能组件 - 查询铱包余额和合约信息
+// 查询功能组件 - 查询ERC20代币余额和合约信息
 import { useState } from 'react'
-import { useAccount, useBalance } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { formatUnits, isAddress } from 'viem'
-import { useMyTokenBalance, useMyTokenInfo } from '../../contracts/hooks/useMyToken'
-import { useTokenBankBalance } from '../../contracts/hooks/useTokenBank'
+import { useERC20Balance, useERC20TokenInfo } from '../../contracts/hooks/useERC20Transfer'
+import { CONTRACT_ADDRESSES } from '../../contracts/addresses'
 import ClientWrapper from '../ClientWrapper'
 
 interface QueryResult {
@@ -18,6 +18,8 @@ export default function QueryForm() {
   const { address, isConnected } = useAccount()
   const [queryType, setQueryType] = useState<'balance' | 'transaction' | 'address'>('balance')
   const [queryInput, setQueryInput] = useState('')
+  const [selectedToken, setSelectedToken] = useState<string>(CONTRACT_ADDRESSES.MY_TOKEN)
+  const [customTokenAddress, setCustomTokenAddress] = useState('')
   const [queryResults, setQueryResults] = useState<QueryResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -35,11 +37,13 @@ export default function QueryForm() {
     </div>
   )
 
-  // 查询余额
-  const { data: queriedBalance, refetch: refetchBalance } = useBalance({
-    address: queryInput as `0x${string}`,
-    query: { enabled: false }
-  })
+  // 查询ERC20余额
+  const tokenAddress = selectedToken === 'custom' ? customTokenAddress : selectedToken
+  const { balance: queriedBalance, refetch: refetchBalance } = useERC20Balance(
+    queryInput || undefined,
+    tokenAddress
+  )
+  const { symbol, decimals } = useERC20TokenInfo(tokenAddress)
 
   // 处理查询操作
   const handleQuery = async (e: React.FormEvent) => {
@@ -63,12 +67,14 @@ export default function QueryForm() {
           }
           
           const balanceData = await refetchBalance()
+          const balance = balanceData?.data as bigint | undefined
+          const formattedBalance = balance ? formatUnits(balance, decimals || 18) : '0'
           result = {
             type: 'balance',
             data: {
               address: queryInput,
-              balance: balanceData.data?.formatted || '0',
-              symbol: balanceData.data?.symbol || 'ETH'
+              balance: formattedBalance,
+              symbol: symbol || 'MTK'
             },
             timestamp: Date.now()
           }
@@ -150,6 +156,34 @@ export default function QueryForm() {
             <option value="address">地址验证</option>
           </select>
         </div>
+
+        {queryType === 'balance' && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              选择代币
+            </label>
+            <select
+              value={selectedToken}
+              onChange={(e) => setSelectedToken(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+              disabled={isLoading}
+            >
+              <option value={CONTRACT_ADDRESSES.MY_TOKEN}>MTK - MyToken</option>
+              <option value="custom">自定义代币地址</option>
+            </select>
+            
+            {selectedToken === 'custom' && (
+              <input
+                type="text"
+                value={customTokenAddress}
+                placeholder="请输入ERC20代币合约地址"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+                onChange={(e) => setCustomTokenAddress(e.target.value)}
+                disabled={isLoading}
+              />
+            )}
+          </div>
+        )}
 
         <div>
           <label htmlFor="query-input" className="block text-sm font-medium text-gray-700 mb-2">
