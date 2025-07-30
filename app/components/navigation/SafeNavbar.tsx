@@ -49,6 +49,7 @@ export default function SafeNavbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <NavLink href="/">首页</NavLink>
+            <NavLink href="/permit-token-bank">签名存款</NavLink>
             <NavLink href="/nft-market">NFT 监听</NavLink>
             <NavLink href="/nft-marketplace">NFT 市场</NavLink>
             <NavLink href="/mint-nft">铸造 NFT</NavLink>
@@ -117,6 +118,7 @@ export default function SafeNavbar() {
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               <MobileNavLink href="/">首页</MobileNavLink>
+              <MobileNavLink href="/permit-token-bank">签名存款</MobileNavLink>
               <MobileNavLink href="/nft-market">NFT 监听</MobileNavLink>
               <MobileNavLink href="/nft-marketplace">NFT 市场</MobileNavLink>
               <MobileNavLink href="/mint-nft">铸造 NFT</MobileNavLink>

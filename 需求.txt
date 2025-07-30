@@ -1,3 +1,9 @@
-1.帮我使用 shadcn/ui 组件库
-2.nft上架、买卖事件，如果链上发生了上架或买卖行为，使用一个样式card展示出来，不同事件使用不同的颜色还时某些样式做区别
-3.使用中文
+1.开发新页面 permitTokenBank 前端支持签名存款功能
+2.添加新的存款界面选项："通过签名存款"
+3.实现前端签名逻辑：获取用户授权，生成签名
+4.将签名信息和存款金额发送到 permitDeposit 函数
+5.处理交易确认和结果反馈
+6.用中文
+7.使用 shadcn/ui 组件库
+8.合约地址和abi在app/contracts/addresses/index.ts和app/contracts/abis/index.ts中
+9.前端使用vimejs

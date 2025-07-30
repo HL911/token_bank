@@ -3,8 +3,8 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { mainnet, arbitrum, sepolia } from '@reown/appkit/networks'
 
 // Get projectId from https://dashboard.reown.com
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || 'your-project-id'
-
+// 临时使用一个有效的项目ID来避免WebSocket连接错误
+export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || 'e598fe9bc526d2b1a8f34feb51c63c10'
 if (!projectId) {
   throw new Error('Project ID is not defined. Please set NEXT_PUBLIC_PROJECT_ID in your .env.local file')
 }

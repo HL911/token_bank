@@ -11,6 +11,12 @@ export const CONTRACT_ADDRESSES = {
 
   // MyERC721合约地址
   MY_ERC721: '0x3135e708310121e5ed78f0d4d8881ee8abe104c8' as `0x${string}`,
+
+  // PermitTokenBank合约地址
+  PERMIT_TOKEN_BANK: '0xce458dc1e0a42b6a4f529d9d416776897eb25dbf' as `0x${string}`,
+
+  // PermitERC20合约地址
+  PERMIT_ERC20: '0xc88e2e568cc88940067c73a6fa2740ffe2034e79' as `0x${string}`,
 } as const
 
 // 导出类型
