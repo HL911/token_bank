@@ -53,6 +53,7 @@ export default function SafeNavbar() {
             <NavLink href="/nft-market">NFT 监听</NavLink>
             <NavLink href="/nft-marketplace">NFT 市场</NavLink>
             <NavLink href="/mint-nft">铸造 NFT</NavLink>
+            <NavLink href="/whitelist-admin">白名单管理</NavLink>
             {!isClient ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}

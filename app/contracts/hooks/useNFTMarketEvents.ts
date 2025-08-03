@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { usePublicClient } from 'wagmi'
 import { CONTRACT_ADDRESSES } from '../addresses'
-import NFTMarketABI from '../abis/NFTMarket.json'
+import NFTMarketABI from '../abis/PermitNFTMarket.json'
 
 // NFT 上架事件类型
 export interface NFTListedEvent {

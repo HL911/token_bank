@@ -19,6 +19,7 @@ export function ListNFTModal({ isOpen, onClose, tokenId, onSuccess }: ListNFTMod
   const [paymentToken, setPaymentToken] = useState('')
   const [customTokenAddress, setCustomTokenAddress] = useState('')
   const [showCustomInput, setShowCustomInput] = useState(false)
+  const [whitelistOnly, setWhitelistOnly] = useState(false)
   const [error, setError] = useState('')
   const { listNFT, isLoading } = useNFTMarket()
   const { symbol: myTokenSymbol } = useERC20Symbol(CONTRACT_ADDRESSES.MY_TOKEN)
@@ -47,11 +48,12 @@ export function ListNFTModal({ isOpen, onClose, tokenId, onSuccess }: ListNFTMod
     }
 
     try {
-      await listNFT(tokenId, price, finalTokenAddress || undefined)
+      await listNFT(tokenId, price, finalTokenAddress || undefined, whitelistOnly)
       setPrice('')
       setPaymentToken('')
       setCustomTokenAddress('')
       setShowCustomInput(false)
+      setWhitelistOnly(false)
       onSuccess?.()
       onClose()
     } catch (error: any) {
@@ -66,6 +68,7 @@ export function ListNFTModal({ isOpen, onClose, tokenId, onSuccess }: ListNFTMod
       setPaymentToken('')
       setCustomTokenAddress('')
       setShowCustomInput(false)
+      setWhitelistOnly(false)
       setError('')
       onClose()
     }
@@ -186,6 +189,26 @@ export function ListNFTModal({ isOpen, onClose, tokenId, onSuccess }: ListNFTMod
             </motion.div>
           )}
 
+          {/* 白名单限制选项 */}
+          <div>
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="whitelistOnly"
+                checked={whitelistOnly}
+                onChange={(e) => setWhitelistOnly(e.target.checked)}
+                disabled={isLoading}
+                className="w-4 h-4 text-yellow-500 bg-gray-800 border-gray-600 rounded focus:ring-yellow-500 focus:ring-2 disabled:opacity-50"
+              />
+              <label htmlFor="whitelistOnly" className="text-sm font-medium text-gray-300">
+                🔒 仅限白名单用户购买
+              </label>
+            </div>
+            <p className="text-gray-400 text-xs mt-2 ml-7">
+              启用后，只有获得项目方签名授权的用户才能购买此NFT
+            </p>
+          </div>
+
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -204,6 +227,9 @@ export function ListNFTModal({ isOpen, onClose, tokenId, onSuccess }: ListNFTMod
               <li>• 可以选择接受的支付代币类型（MyToken或ETH）</li>
               <li>• 上架成功后其他用户可以购买您的NFT</li>
               <li>• 您可以随时取消上架</li>
+              {whitelistOnly && (
+                <li className="text-yellow-300">• 🔒 白名单限制：只有获得项目方签名的用户才能购买</li>
+              )}
             </ul>
           </div>
 

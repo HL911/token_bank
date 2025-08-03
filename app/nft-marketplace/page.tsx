@@ -46,7 +46,8 @@ export default function NFTMarketplacePage() {
       price: listing.price.toString(),
       seller: listing.seller,
       paymentToken: listing.paymentToken,
-      isActive: listing.isActive
+      isActive: listing.isActive,
+      whitelistOnly: listing.whitelistOnly || false // 添加白名单字段
     }))
   }, [marketListings])
 
@@ -74,7 +75,8 @@ export default function NFTMarketplacePage() {
             listingId: userListing.listingId.toString(),
             price: userListing.price.toString(),
             seller: userListing.seller,
-            paymentToken: userListing.paymentToken
+            paymentToken: userListing.paymentToken,
+            whitelistOnly: userListing.whitelistOnly || false // 添加白名单字段
           }
         })
       }
@@ -316,6 +318,7 @@ export default function NFTMarketplacePage() {
                       seller={listing.seller}
                       paymentToken={listing.paymentToken}
                       isListed={true}
+                      whitelistOnly={listing.whitelistOnly}
                       onRefresh={handleRefresh}
                     />
                   ))}
@@ -356,6 +359,7 @@ export default function NFTMarketplacePage() {
                         seller={nft.listing?.seller}
                         paymentToken={nft.listing?.paymentToken}
                         isListed={nft.isListed}
+                        whitelistOnly={nft.listing?.whitelistOnly}
                         onRefresh={handleRefresh}
                         showListingActions={false}
                         ownerAddress={address}

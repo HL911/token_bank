@@ -3,8 +3,9 @@
 import { useWriteContract, useReadContract, useAccount, usePublicClient } from 'wagmi'
 import { parseEther, formatEther } from 'viem'
 import { CONTRACT_ADDRESSES } from '../addresses'
-import NFTMarketABI from '../abis/NFTMarket.json'
+import NFTMarketABI from '../abis/PermitNFTMarket.json'
 import MyERC721ABI from '../abis/MyERC721.json'
+import PermitERC20ABI from '../abis/PermitERC20.json'
 import { useState, useCallback } from 'react'
 import { checkNFTApproval } from './useNFTApproval'
 
@@ -16,6 +17,7 @@ export interface NFTListing {
   price: bigint
   paymentToken: string
   isActive: boolean
+  whitelistOnly: boolean
 }
 
 export function useNFTMarket() {
@@ -26,11 +28,12 @@ export function useNFTMarket() {
   // 写入合约的hooks
   const { writeContract: writeNFTMarket } = useWriteContract()
   const { writeContract: writeERC721 } = useWriteContract()
+  const { writeContract: writeERC20 } = useWriteContract()
   
 
 
   // 上架NFT
-  const listNFT = useCallback(async (tokenId: string, price: string, paymentToken?: string) => {
+  const listNFT = useCallback(async (tokenId: string, price: string, paymentToken?: string, whitelistOnly: boolean = false) => {
     if (!address) throw new Error('请先连接钱包')
     if (!publicClient) throw new Error('网络连接失败')
     
@@ -64,7 +67,8 @@ export function useNFTMarket() {
           CONTRACT_ADDRESSES.MY_ERC721,
           BigInt(tokenId),
           parseEther(price),
-          paymentToken || CONTRACT_ADDRESSES.MY_TOKEN // 默认使用MyToken作为支付代币
+          paymentToken || CONTRACT_ADDRESSES.MY_TOKEN, // 默认使用MyToken作为支付代币
+          whitelistOnly // 新增白名单限制参数
         ]
       })
       
@@ -75,24 +79,93 @@ export function useNFTMarket() {
     }
   }, [address, publicClient, writeNFTMarket, writeERC721])
 
+  // 检查代币授权并自动授权
+  const checkAndApproveToken = useCallback(async (tokenAddress: string, spenderAddress: string, requiredAmount: bigint) => {
+    if (!publicClient || !address) throw new Error('网络连接失败或未连接钱包')
+    
+    // 检查用户代币余额
+    const balance = await publicClient.readContract({
+      address: tokenAddress as `0x${string}`,
+      abi: PermitERC20ABI,
+      functionName: 'balanceOf',
+      args: [address]
+    }) as bigint
+    
+    if (balance < requiredAmount) {
+      throw new Error(`代币余额不足。需要: ${formatEther(requiredAmount)}, 当前: ${formatEther(balance)}`)
+    }
+    
+    // 检查当前授权额度
+    const currentAllowance = await publicClient.readContract({
+      address: tokenAddress as `0x${string}`,
+      abi: PermitERC20ABI,
+      functionName: 'allowance',
+      args: [address, spenderAddress]
+    }) as bigint
+    
+    // 如果授权不足，执行授权
+    if (currentAllowance < requiredAmount) {
+      console.log(`代币授权不足，正在授权...当前: ${formatEther(currentAllowance)}, 需要: ${formatEther(requiredAmount)}`)
+      
+      await writeERC20({
+        address: tokenAddress as `0x${string}`,
+        abi: PermitERC20ABI,
+        functionName: 'approve',
+        args: [spenderAddress, requiredAmount]
+      })
+      
+      // 等待授权交易确认
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      console.log('代币授权完成')
+    } else {
+      console.log('代币授权充足，跳过授权步骤')
+    }
+  }, [publicClient, address, writeERC20])
+
   // 购买NFT
   const buyNFT = useCallback(async (listingId: string) => {
     if (!address) throw new Error('请先连接钱包')
+    if (!publicClient) throw new Error('网络连接失败')
     
     setIsLoading(true)
     try {
+      // 1. 获取listing信息
+      const listing = await publicClient.readContract({
+        address: CONTRACT_ADDRESSES.NFT_MARKET,
+        abi: NFTMarketABI,
+        functionName: 'listings',
+        args: [BigInt(listingId)]
+      }) as any[]
+      
+      if (!listing || !listing[6]) { // isActive
+        throw new Error('NFT未上架或已售出')
+      }
+      
+      const price = listing[4] as bigint // price
+      const paymentToken = listing[5] as string // paymentToken
+      const whitelistOnly = listing[7] as boolean // whitelistOnly
+      
+      if (whitelistOnly) {
+        throw new Error('此NFT需要白名单授权，请使用permitBuy功能')
+      }
+      
+      // 2. 检查并授权代币
+      await checkAndApproveToken(paymentToken, CONTRACT_ADDRESSES.NFT_MARKET, price)
+      
+      // 3. 执行购买
       await writeNFTMarket({
         address: CONTRACT_ADDRESSES.NFT_MARKET,
         abi: NFTMarketABI,
         functionName: 'buy',
         args: [BigInt(listingId)]
       })
+      
     } catch (error) {
       throw error
     } finally {
       setIsLoading(false)
     }
-  }, [address, writeNFTMarket])
+  }, [address, publicClient, writeNFTMarket, checkAndApproveToken])
 
   // 取消上架
   const cancelListing = useCallback(async (listingId: string) => {
@@ -113,9 +186,55 @@ export function useNFTMarket() {
     }
   }, [address, writeNFTMarket])
 
+  // 白名单购买NFT (需要项目方签名)
+  const permitBuyNFT = useCallback(async (listingId: string, deadline: bigint, v: number, r: string, s: string) => {
+    if (!address) throw new Error('请先连接钱包')
+    if (!publicClient) throw new Error('网络连接失败')
+    
+    setIsLoading(true)
+    try {
+      // 1. 获取listing信息
+      const listing = await publicClient.readContract({
+        address: CONTRACT_ADDRESSES.NFT_MARKET,
+        abi: NFTMarketABI,
+        functionName: 'listings',
+        args: [BigInt(listingId)]
+      }) as any[]
+      
+      if (!listing || !listing[6]) { // isActive
+        throw new Error('NFT未上架或已售出')
+      }
+      
+      const price = listing[4] as bigint // price
+      const paymentToken = listing[5] as string // paymentToken
+      const whitelistOnly = listing[7] as boolean // whitelistOnly
+      
+      if (!whitelistOnly) {
+        throw new Error('此NFT不需要白名单授权，请使用普通购买功能')
+      }
+      
+      // 2. 检查并授权代币
+      await checkAndApproveToken(paymentToken, CONTRACT_ADDRESSES.NFT_MARKET, price)
+      
+      // 3. 执行白名单购买
+      await writeNFTMarket({
+        address: CONTRACT_ADDRESSES.NFT_MARKET,
+        abi: NFTMarketABI,
+        functionName: 'permitBuy',
+        args: [BigInt(listingId), deadline, v, r, s]
+      })
+      
+    } catch (error) {
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }, [address, publicClient, writeNFTMarket, checkAndApproveToken])
+
   return {
     listNFT,
     buyNFT,
+    permitBuyNFT,
     cancelListing,
     isLoading
   }

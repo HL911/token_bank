@@ -9,6 +9,7 @@ import { useNFTMarket, useNFTOwner, useNFTMetadata } from '../../contracts/hooks
 import { CONTRACT_ADDRESSES } from '../../contracts/addresses'
 import { useTokenDisplayName } from '../../contracts/hooks/useERC20Info'
 import { useState } from 'react'
+import { WhitelistBuyModal } from './WhitelistBuyModal'
 
 interface NFTCardProps {
   tokenId: string
@@ -16,6 +17,7 @@ interface NFTCardProps {
   price?: string
   seller?: string
   isListed?: boolean
+  whitelistOnly?: boolean // 是否仅限白名单用户购买
   onRefresh?: () => void
   showListingActions?: boolean // 是否显示内部的上架相关操作
   ownerAddress?: string // 直接传入所有者地址，避免重复查询
@@ -28,6 +30,7 @@ export function NFTCard({
   price, 
   seller, 
   isListed = false,
+  whitelistOnly = false,
   onRefresh,
   showListingActions = true,
   ownerAddress,
@@ -42,6 +45,7 @@ export function NFTCard({
   
   const [showBuyModal, setShowBuyModal] = useState(false)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showWhitelistBuyModal, setShowWhitelistBuyModal] = useState(false)
 
   const isOwner = address && owner && address.toLowerCase() === owner.toLowerCase()
   const isSeller = address && seller && address.toLowerCase() === seller.toLowerCase()
@@ -85,15 +89,22 @@ export function NFTCard({
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg text-white">NFT #{tokenId}</CardTitle>
-              {isListed ? (
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                  在售
-                </Badge>
-              ) : (
-                <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">
-                  未上架
-                </Badge>
-              )}
+              <div className="flex gap-2">
+                {isListed ? (
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                    在售
+                  </Badge>
+                ) : (
+                  <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">
+                    未上架
+                  </Badge>
+                )}
+                {whitelistOnly && (
+                  <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                    白名单
+                  </Badge>
+                )}
+              </div>
             </div>
             <CardDescription className="text-gray-400">
               所有者: {ownerAddress ? `${ownerAddress.slice(0, 6)}...${ownerAddress.slice(-4)}` : (owner ? `${owner.slice(0, 6)}...${owner.slice(-4)}` : '加载中...')}
@@ -150,15 +161,38 @@ export function NFTCard({
             {/* 操作按钮 */}
             <div className="mt-4 space-y-2">
               {isListed && !isSeller && address && (
-                <motion.button
-                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                  onClick={() => setShowBuyModal(true)}
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-green-500 to-green-600 text-black px-4 py-2 rounded-lg font-medium hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-lg hover:shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? '处理中...' : '购买'}
-                </motion.button>
+                <>
+                  {whitelistOnly ? (
+                    <div className="space-y-2">
+                      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                        <p className="text-yellow-400 text-sm text-center">
+                          🔒 此NFT仅限白名单用户购买
+                        </p>
+                        <p className="text-gray-400 text-xs text-center mt-1">
+                          请输入项目方提供的白名单签名进行购买
+                        </p>
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setShowWhitelistBuyModal(true)}
+                        className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-4 py-2 rounded-lg font-medium hover:from-yellow-400 hover:to-yellow-500 transition-all duration-300 shadow-lg hover:shadow-yellow-500/25"
+                      >
+                        🔐 白名单购买
+                      </motion.button>
+                    </div>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                      whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                      onClick={() => setShowBuyModal(true)}
+                      disabled={isLoading}
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-black px-4 py-2 rounded-lg font-medium hover:from-green-400 hover:to-green-500 transition-all duration-300 shadow-lg hover:shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? '处理中...' : '购买'}
+                    </motion.button>
+                  )}
+                </>
               )}
 
               {isListed && isSeller && (
@@ -195,7 +229,7 @@ export function NFTCard({
             <p className="text-gray-300 mb-6">
               您确定要购买 NFT #{tokenId} 吗？
               <br />
-              价格: <span className="text-green-400 font-bold">{price && formatEther(BigInt(price))} ETH</span>
+              价格: <span className="text-green-400 font-bold">{price && formatEther(BigInt(price))} {tokenSymbol}</span>
             </p>
             <div className="flex space-x-3">
               <button
@@ -248,6 +282,22 @@ export function NFTCard({
           </motion.div>
         </div>
       )}
+
+      {/* 白名单购买模态框 */}
+      <WhitelistBuyModal
+        isOpen={showWhitelistBuyModal}
+        onClose={() => setShowWhitelistBuyModal(false)}
+        listingId={listingId || '0'}
+        price={price || '0'}
+        paymentToken={paymentToken}
+        onBuySuccess={() => {
+          setShowWhitelistBuyModal(false)
+          // 等待一小段时间让交易确认，然后刷新状态
+          setTimeout(() => {
+            onRefresh?.()
+          }, 2000)
+        }}
+      />
     </>
   )
 }

@@ -38,8 +38,9 @@ export async function checkNFTApproval(publicClient: any, tokenId: string): Prom
       functionName: 'getApproved',
       args: [BigInt(tokenId)]
     })
+    console.log('approvedAddress:', approvedAddress)
     
-    return approvedAddress === CONTRACT_ADDRESSES.NFT_MARKET
+    return approvedAddress.toLowerCase() === CONTRACT_ADDRESSES.NFT_MARKET.toLowerCase()
   } catch (error) {
     console.error('检查授权状态失败:', error)
     return false
